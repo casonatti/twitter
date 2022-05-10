@@ -1,7 +1,7 @@
 all: server client clean
 
 server: server.o
-	g++ -o server server.o
+	g++ -o server server.o -pthread 
 
 client: client.o
 	g++ -o client client.o
