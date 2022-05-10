@@ -1,4 +1,4 @@
-all: server client
+all: server client clean
 
 server: server.o
 	g++ -o server server.o
