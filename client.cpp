@@ -43,12 +43,12 @@ int main() {
         memset(buffer, ' ', strlen(buffer));
         
         cout << "msg: ";
-        cin >> in;
-        cout << "sending message: " << in << endl;
+        cin.getline(in,MESSAGE_LENGTH);
+        cout << "sending message to server: \"" << in << "\"" << endl;
         send(sock, in, strlen(in), 0);
         
         valread = read(sock, buffer, BUFFER_SIZE);
-        cout << "received message: " << buffer << endl << endl;
+        cout << "received message from server: \"" << buffer << "\"" << endl << endl;
     }
 
     return 0;

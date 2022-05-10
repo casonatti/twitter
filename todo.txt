@@ -1,2 +1,2 @@
-- create CMAKE-like to fast compile
-- client message that contains white spaces should be sent once (currently it's being sent separately)
+- make the server receptive to N clients;
+- when the communication of 1 client ends, keep the server alive;
