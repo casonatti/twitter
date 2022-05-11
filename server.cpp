@@ -18,8 +18,8 @@ using namespace std;
 
 void *serverStuff(void* new_socket) {
     bool flag_quit = false;
-    const char* server_response = "ACK";
-    const char* server_quit = "QUITTING";
+    const char* server_ack_message = "ACK";
+    const char* server_quit_message = "QUITTING";
     char buffer[BUFFER_SIZE] = { 0 };
     int valread;
     int client_socket;
@@ -39,10 +39,10 @@ void *serverStuff(void* new_socket) {
         if(str_buffer.compare(0,4,STRING_QUIT,0,4) == 0) {
             flag_quit = true;            
         } else {
-            send(client_socket, server_response, strlen(server_response), 0);
+            send(client_socket, server_ack_message, strlen(server_ack_message), 0);
         }
     }
-    send(client_socket, server_quit, strlen(server_quit), 0);
+    send(client_socket, server_quit_message, strlen(server_quit_message), 0);
     close(client_socket);
     pthread_exit(NULL);
 }
