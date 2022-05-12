@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -23,7 +24,7 @@ int sock = 0;
 
 
 void signalHandler(int signum) {
-    const char* exit_message = "quit SOMETHING GONE WRONG WITH ME... CYA!";
+    const char* exit_message = "EXIT SOMETHING GONE WRONG WITH ME... CYA!";
     char buffer[BUFFER_SIZE] = { 0 };
 
     memset(buffer, ' ', strlen(buffer));
@@ -40,17 +41,17 @@ void signalHandler(int signum) {
 }
 
 //it's being implemented on the client side to don't overcharge server side with "bad commands"
-int getCommand(char aux[]) {
-    string command = "";
+int getCommand(char user_input[]) {
+    string command;
+    stringstream ss (user_input);
+    const char* cmd_exit ("EXIT");
     const char* cmd_follow ("FOLLOW");
     const char* cmd_send ("SEND");
-    for(int i = 0; i < MAX_COMMAND_LENGTH; i++) {
-        if(aux[i] == WHITESPACE) //stop for loop.
-            break;
-        command += aux[i];
-    }
 
-    if((command.compare(cmd_send) == 0) || (command.compare(cmd_follow) == 0)) //is it the best way? xD
+    //it works like a split
+    getline(ss, command, ' ');
+
+    if((command.compare(cmd_send) == 0) || (command.compare(cmd_follow) == 0) || (command.compare(cmd_exit) == 0)) //is it the best way? xD
         return 1;
 
     return -1;

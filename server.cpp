@@ -14,20 +14,21 @@ using namespace std;
 #define IP_PROTOCOL 0
 #define MAX_THREADS 2
 #define PORT 8080
-#define STRING_QUIT "quit"
 
 void *serverStuff(void* new_socket) {
     bool flag_quit = false;
     const char* server_ack_message = "ACK";
     const char* server_quit_message = "QUITTING";
+    const char* cmd_exit = "EXIT";
     char buffer[BUFFER_SIZE] = { 0 };
-    int valread;
     int client_socket;
     int* p = (int*) new_socket;
+    int valread;
     string str_buffer;
-    string str_exit ("exit");
 
     client_socket = (int)*p;
+
+    cout << "Socket " << client_socket << " initialized." << endl;
 
     while(!flag_quit) {
         memset(buffer, ' ', strlen(buffer));
@@ -36,13 +37,14 @@ void *serverStuff(void* new_socket) {
         std::cout << "[Client (" << client_socket << ")] " << str_buffer << std::endl;
         
         //if client sent "exit", kill this thread
-        if(str_buffer.compare(0,4,STRING_QUIT,0,4) == 0) {
+        if(str_buffer.compare(0,4,cmd_exit,0,4) == 0) {
             flag_quit = true;            
         } else {
             send(client_socket, server_ack_message, strlen(server_ack_message), 0);
         }
     }
     send(client_socket, server_quit_message, strlen(server_quit_message), 0);
+    cout << "Closing socket " << client_socket << "..." << endl << endl;
     close(client_socket);
     pthread_exit(NULL);
 }
