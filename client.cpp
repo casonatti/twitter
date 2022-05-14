@@ -8,6 +8,8 @@
 #include <unistd.h>
 #include <iostream>
 #include <sstream>
+#include "Notification.hpp"
+#include "Packet.hpp"
 
 using namespace std;
 
@@ -21,7 +23,7 @@ using namespace std;
 
 //global var
 int sock = 0;
-
+int global_notification_id = 0;
 
 void signalHandler(int signum) {
     const char* exit_message = "EXIT SOMETHING GONE WRONG WITH ME... CYA!";
@@ -64,6 +66,7 @@ int main(int argc, char** argv) {
     struct sockaddr_in server_addr;
     char buffer[BUFFER_SIZE] = { 0 };
     string str_aux;
+    Notification notification;
     signal(SIGINT, signalHandler);
     signal(SIGHUP, signalHandler);
 
@@ -95,11 +98,15 @@ int main(int argc, char** argv) {
         cin.getline(in,MESSAGE_LENGTH);
         command = getCommand(in);
 
+        notification.setId(global_notification_id);
+        notification.setMessage((const char*)command);
+        notification.incNotificationId(&global_notification_id);
+
         if(command > 0) {
             cout << "sending message to server: \"" << in << "\"" << endl;
             send(sock, in, strlen(in), 0);
             
-            valread = recv(sock, buffer, BUFFER_SIZE, 0);
+            valread = recv(sock, notification, sizeof(notification), 0);
             cout << "received message from server: \"" << buffer << "\"" << endl << endl;
 
             str_aux = buffer;

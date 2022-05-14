@@ -1,2 +1,6 @@
 - when server falls, disconnect all clients; (Not tested yet)
 - send a message from server side to client side about the fail in connecting when i=MAX_THREAD (client side doesn't get any info)
+
+- MUST SERIALIZE THE PACKET
+
+- PACKET IS A STRUCTURE WITH A NOTIFICATION AS COMPONENT

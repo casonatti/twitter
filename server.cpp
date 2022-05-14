@@ -7,6 +7,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <pthread.h>
+#include "Notification.hpp"
+#include "Packet.hpp"
 
 using namespace std;
 
