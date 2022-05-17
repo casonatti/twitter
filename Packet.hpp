@@ -1,5 +1,9 @@
 #ifndef PACKET_HPP
+#define PACKET_HPP
 #include <stdlib.h>
+#include <string>
+#include <string.h>
+
 
 class Packet {
     private:
@@ -29,6 +33,10 @@ class Packet {
         u_int16_t getTimestamp();
 
         const char* getPayload();
+
+        void serialize(std::string* str_serialization);
+
+        Packet unserialize();
 };
 
 #endif

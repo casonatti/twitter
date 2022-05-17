@@ -7,8 +7,14 @@ void Notification::setId(uint32_t id) {
 void Notification::setTimestamp(u_int32_t timestamp) {
     this->timestamp = timestamp;
 }
-        
-void Notification::setLength(u_int16_t length) {
+
+
+//TODO this method doesn't look ok
+void Notification::setLength() {
+    u_int16_t length;
+
+    length = sizeof(this->getId()) + sizeof(this->getTimestamp()) + strlen(this->getMessage());
+
     this->length = length;
 }
 
@@ -46,4 +52,22 @@ void Notification::subtractPending() {
 
 void Notification::incNotificationId(int* global_notification_id) {
     *global_notification_id++;
+}
+
+void Notification::serialize(std::string* str_serialization) {
+    const char token = '&';
+
+    *str_serialization += std::to_string(this->getId());   
+    *str_serialization += token;
+    *str_serialization += std::to_string(this->getTimestamp());
+    *str_serialization += token;
+    *str_serialization += std::to_string(this->getLength());
+    *str_serialization += token;
+    *str_serialization += this->getMessage();
+}
+
+Notification Notification::unserialize(const char* notification_serialized) {
+    Notification notification_unserieliazed;
+
+    return notification_unserieliazed;
 }

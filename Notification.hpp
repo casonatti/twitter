@@ -1,5 +1,9 @@
 #ifndef NOTIFICATION_HPP
+#define NOTIFICATION_HPP
 #include <stdlib.h>
+#include <cstring>
+#include <string.h>
+#include <string>
 #include <iostream>
 
 class Notification {
@@ -15,7 +19,7 @@ class Notification {
 
         void setTimestamp(u_int32_t timestamp);
         
-        void setLength(u_int16_t length);
+        void setLength();
 
         void setPending(u_int16_t pending);
 
@@ -34,6 +38,10 @@ class Notification {
         void subtractPending();
 
         void incNotificationId(int* global_notification_id);
+
+        void serialize(std::string* str_serialization);
+
+        Notification unserialize(const char* notification_serialized);
 };
 
 #endif

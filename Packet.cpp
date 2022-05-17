@@ -1,6 +1,10 @@
+#include "Packet.hpp"
 #include <stdlib.h>
 #include <iostream>
-#include "Packet.hpp"
+#include <string>
+#include <string.h>
+
+using namespace std;
 
 void Packet::setType(u_int16_t type) {
     this->type = type;
@@ -40,4 +44,29 @@ u_int16_t Packet::getTimestamp() {
 
 const char* Packet::getPayload() {
     return this->_payload;
+}
+
+void Packet::serialize(std::string* str_serialization) {
+    const char token = '&';
+
+    *str_serialization += std::to_string(this->getType());   
+    *str_serialization += token;
+    *str_serialization += std::to_string(this->getSeqn());
+    *str_serialization += token;
+    *str_serialization += std::to_string(this->getLength());
+    *str_serialization += token;
+    *str_serialization += std::to_string(this->getTimestamp());
+    *str_serialization += token;
+    *str_serialization += std::to_string(this->getLength());
+    *str_serialization += token;
+    *str_serialization += this->getPayload();
+    *str_serialization += '\0';
+}
+
+Packet Packet::unserialize() {
+    Packet pack_unserialized;
+
+    //TODO unserialization...
+
+    return pack_unserialized;
 }
