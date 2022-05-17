@@ -14,6 +14,9 @@
 using namespace std;
 
 #define BUFFER_SIZE 512
+#define CMD_SEND 1
+#define CMD_FOLLOW 2
+#define CMD_EXIT 3
 #define IP_PROTOCOL 0
 #define MAX_COMMAND_LENGTH 6
 #define MESSAGE_LENGTH 128
@@ -53,22 +56,32 @@ int getCommand(char user_input[]) {
     //it works like a split
     getline(ss, command, ' ');
 
-    if((command.compare(cmd_send) == 0) || (command.compare(cmd_follow) == 0) || (command.compare(cmd_exit) == 0)) //is it the best way? xD
-        return 1;
+    if(command.compare(cmd_send) == 0)
+        return CMD_SEND; 
+    if(command.compare(cmd_follow) == 0)
+        return CMD_FOLLOW;
+    if(command.compare(cmd_exit) == 0)
+        return CMD_EXIT;
 
-    return -1;
+    return 0;
 }
 
 int main(int argc, char** argv) {
     bool flag_quit = false;
     char in[MESSAGE_LENGTH] = { 0 };
+    const char* packet_serialized;
+    const char* notification_serialized;
     int valread, command = -1;
     struct sockaddr_in server_addr;
     char buffer[BUFFER_SIZE] = { 0 };
     string str_aux;
+    string str_notification_serial ("");
+    string str_packet_serial ("");
     Notification notification;
+    Packet pack;
     signal(SIGINT, signalHandler);
     signal(SIGHUP, signalHandler);
+
 
     if((sock = socket(AF_INET, SOCK_STREAM, IP_PROTOCOL)) <  0) {
         printf("Socket creation error");
@@ -98,15 +111,40 @@ int main(int argc, char** argv) {
         cin.getline(in,MESSAGE_LENGTH);
         command = getCommand(in);
 
-        notification.setId(global_notification_id);
-        notification.setMessage((const char*)command);
-        notification.incNotificationId(&global_notification_id);
-
         if(command > 0) {
-            cout << "sending message to server: \"" << in << "\"" << endl;
-            send(sock, in, strlen(in), 0);
+            //serialization strings reset
+            str_notification_serial = "";
+            str_packet_serial = "";
+
+            //fill notification object
+            notification.setId(global_notification_id);
+            notification.incNotificationId(&global_notification_id);
+            notification.setTimestamp(1);
+            notification.setMessage(in);
+            notification.setLength();
+
+            //serializing notification
+            notification.serialize(&str_notification_serial);
+
+            //fill packet object
+            pack.setType(1);
+            pack.setSeqn(1);
+            pack.setTimestamp(1);
+            pack.setLength(static_cast<unsigned int>(sizeof(notification))); //casts size_t to uint
+            pack.setPayload(str_notification_serial.c_str());
             
-            valread = recv(sock, notification, sizeof(notification), 0);
+            //serialize packet objct
+            pack.serialize(&str_packet_serial);
+
+            //convert the string to const char*
+            packet_serialized = str_packet_serial.c_str();
+
+            //send the packet
+            cout << "sending message to server: \"" << packet_serialized << "\"" << endl;
+            send(sock, packet_serialized, strlen(packet_serialized), 0);
+            
+            //receive a packet
+            valread = recv(sock, buffer, sizeof(buffer), 0);
             cout << "received message from server: \"" << buffer << "\"" << endl << endl;
 
             str_aux = buffer;
